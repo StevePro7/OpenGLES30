@@ -19,6 +19,11 @@
 		80245AF41F62D6AA00141627 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80245AF31F62D6AA00141627 /* CoreGraphics.framework */; };
 		80245AF61F62D6B100141627 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80245AF51F62D6B100141627 /* OpenGLES.framework */; };
 		80245AF81F62D72000141627 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 80245AF71F62D72000141627 /* ViewController.mm */; };
+		80245AFB1F62D86700141627 /* esUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80245AFA1F62D86700141627 /* esUtil.cpp */; };
+		80245AFF1F62D88100141627 /* esShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80245AFC1F62D88100141627 /* esShader.cpp */; };
+		80245B001F62D88100141627 /* esShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80245AFD1F62D88100141627 /* esShapes.cpp */; };
+		80245B011F62D88100141627 /* esTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80245AFE1F62D88100141627 /* esTransform.cpp */; };
+		80245B031F62D8D000141627 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80245B021F62D8D000141627 /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +44,12 @@
 		80245AF31F62D6AA00141627 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		80245AF51F62D6B100141627 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		80245AF71F62D72000141627 /* ViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
+		80245AF91F62D84A00141627 /* esUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = esUtil.h; path = ../../../../Common/Inc/esUtil.h; sourceTree = "<group>"; };
+		80245AFA1F62D86700141627 /* esUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = esUtil.cpp; path = ../../../../Common/Src/esUtil.cpp; sourceTree = "<group>"; };
+		80245AFC1F62D88100141627 /* esShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = esShader.cpp; path = ../../../../Common/Src/esShader.cpp; sourceTree = "<group>"; };
+		80245AFD1F62D88100141627 /* esShapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = esShapes.cpp; path = ../../../../Common/Src/esShapes.cpp; sourceTree = "<group>"; };
+		80245AFE1F62D88100141627 /* esTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = esTransform.cpp; path = ../../../../Common/Src/esTransform.cpp; sourceTree = "<group>"; };
+		80245B021F62D8D000141627 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../Src/main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,8 +71,8 @@
 		80245ABC1F62D2E300141627 = {
 			isa = PBXGroup;
 			children = (
-				80245AE01F62D4A400141627 /* Source Files */,
 				80245ADF1F62D49700141627 /* Header Files */,
+				80245AE01F62D4A400141627 /* Source Files */,
 				80245AC71F62D2E300141627 /* Game */,
 				80245AC61F62D2E300141627 /* Products */,
 				80245AEC1F62D69400141627 /* Frameworks */,
@@ -105,6 +116,7 @@
 		80245ADF1F62D49700141627 /* Header Files */ = {
 			isa = PBXGroup;
 			children = (
+				80245AF91F62D84A00141627 /* esUtil.h */,
 			);
 			name = "Header Files";
 			sourceTree = "<group>";
@@ -112,6 +124,11 @@
 		80245AE01F62D4A400141627 /* Source Files */ = {
 			isa = PBXGroup;
 			children = (
+				80245B021F62D8D000141627 /* main.cpp */,
+				80245AFC1F62D88100141627 /* esShader.cpp */,
+				80245AFD1F62D88100141627 /* esShapes.cpp */,
+				80245AFE1F62D88100141627 /* esTransform.cpp */,
+				80245AFA1F62D86700141627 /* esUtil.cpp */,
 			);
 			name = "Source Files";
 			sourceTree = "<group>";
@@ -199,9 +216,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80245AFB1F62D86700141627 /* esUtil.cpp in Sources */,
 				80245AF81F62D72000141627 /* ViewController.mm in Sources */,
+				80245B031F62D8D000141627 /* main.cpp in Sources */,
 				80245ACD1F62D2E300141627 /* AppDelegate.m in Sources */,
+				80245B001F62D88100141627 /* esShapes.cpp in Sources */,
+				80245B011F62D88100141627 /* esTransform.cpp in Sources */,
 				80245AE91F62D4E000141627 /* FileWrapper.mm in Sources */,
+				80245AFF1F62D88100141627 /* esShader.cpp in Sources */,
 				80245ACA1F62D2E300141627 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
