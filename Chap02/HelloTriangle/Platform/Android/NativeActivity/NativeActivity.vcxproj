@@ -37,7 +37,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{66952258-e4a5-45f9-92e2-4d211ca0922f}</ProjectGuid>
     <Keyword>Android</Keyword>
-    <RootNamespace>Chap</RootNamespace>
+    <RootNamespace>Game</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <ApplicationType>Android</ApplicationType>

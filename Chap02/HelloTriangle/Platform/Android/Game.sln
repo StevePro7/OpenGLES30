@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Chap", "Chap", "{1D2DE63A-5E50-4DF4-8270-C20DA28AB1C2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Game", "Game", "{1D2DE63A-5E50-4DF4-8270-C20DA28AB1C2}"
 EndProject
 Project("{39E2626F-3545-4960-A6E8-258AD8476CE5}") = "Packaging", "Packaging\Packaging.androidproj", "{C9F782EE-768C-4E97-AE34-4746292F6507}"
 EndProject
