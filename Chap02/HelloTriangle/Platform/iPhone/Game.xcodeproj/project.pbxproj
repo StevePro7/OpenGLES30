@@ -124,11 +124,11 @@
 		80245AE01F62D4A400141627 /* Source Files */ = {
 			isa = PBXGroup;
 			children = (
-				80245B021F62D8D000141627 /* main.cpp */,
 				80245AFC1F62D88100141627 /* esShader.cpp */,
 				80245AFD1F62D88100141627 /* esShapes.cpp */,
 				80245AFE1F62D88100141627 /* esTransform.cpp */,
 				80245AFA1F62D86700141627 /* esUtil.cpp */,
+				80245B021F62D8D000141627 /* main.cpp */,
 			);
 			name = "Source Files";
 			sourceTree = "<group>";
