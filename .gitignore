@@ -1,0 +1,4 @@
+*.ncb
+*.suo
+*.vcxproj.*.user
+*.xcuserstate
