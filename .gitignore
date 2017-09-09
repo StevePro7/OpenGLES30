@@ -2,3 +2,10 @@
 *.suo
 *.vcxproj.*.user
 *.xcuserstate
+*.vs*
+*.so*
+*Obj*
+*ARM*
+*ARM64*
+*x64*
+*x86*
