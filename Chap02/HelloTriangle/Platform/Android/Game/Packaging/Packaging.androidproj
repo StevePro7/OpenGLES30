@@ -35,10 +35,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <RootNamespace>Chap</RootNamespace>
+    <RootNamespace>Game</RootNamespace>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <ProjectVersion>1.0</ProjectVersion>
-    <ProjectGuid>{c9f782ee-768c-4e97-ae34-4746292f6507}</ProjectGuid>
+    <ProjectGuid>{7e22df7c-4dec-437e-9c0a-0354e0cb27d3}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(AndroidTargetsPath)\Android.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
@@ -127,7 +127,9 @@
     <Content Include="res\mipmap-xxxhdpi\ic_launcher.png" />
     <Content Include="res\values\strings.xml" />
     <AntBuildXml Include="build.xml" />
-    <AndroidManifest Include="AndroidManifest.xml" />
+    <AndroidManifest Include="AndroidManifest.xml">
+      <SubType>Designer</SubType>
+    </AndroidManifest>
     <AntProjectPropertiesFile Include="project.properties" />
   </ItemGroup>
   <ItemGroup>

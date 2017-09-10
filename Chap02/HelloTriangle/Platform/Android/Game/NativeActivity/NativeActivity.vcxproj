@@ -34,8 +34,22 @@
       <Platform>x86</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Common\Inc\esUtil.h" />
+    <ClInclude Include="Src\android_native_app_glue.h" />
+    <ClInclude Include="Src\pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\Common\Src\esShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Common\Src\esShapes.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Common\Src\esTransform.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Common\Src\esUtil.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Common\Src\esUtil_Android.cpp" />
+    <ClCompile Include="..\..\..\..\Src\main.cpp" />
+    <ClCompile Include="Src\android_native_app_glue.c" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{66952258-e4a5-45f9-92e2-4d211ca0922f}</ProjectGuid>
+    <ProjectGuid>{9a3bc62d-88bb-4c75-9c3b-a4fcde412527}</ProjectGuid>
     <Keyword>Android</Keyword>
     <RootNamespace>Game</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
@@ -118,7 +132,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <OutDir>$(ProjectDir)Bin\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)Obj\$(Configuration)\</IntDir>
+    <IntDir>$(ProjectDir)Bin\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
@@ -133,10 +147,9 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAs>CompileAsCpp</CompileAs>
-      <PreprocessorDefinitions>ANDROID;GL_GLEXT_PROTOTYPES</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);log;GLESv3;EGL;m;</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -154,8 +167,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Src\pch.h</PrecompiledHeaderFile>
       <CompileAs>CompileAsCpp</CompileAs>
-      <PreprocessorDefinitions>ANDROID;GL_GLEXT_PROTOTYPES</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)Src;$(SolutionDir)..\..\..\..\Common\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ANDROID;GL_GLEXT_PROTOTYPES</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <LibraryDependencies>%(LibraryDependencies);log;GLESv3;EGL;m;</LibraryDependencies>
@@ -176,10 +189,9 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAs>CompileAsCpp</CompileAs>
-      <PreprocessorDefinitions>ANDROID;GL_GLEXT_PROTOTYPES</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);log;GLESv3;EGL;m;</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -197,7 +209,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Src\pch.h</PrecompiledHeaderFile>
       <CompileAs>CompileAsCpp</CompileAs>
-      <AdditionalIncludeDirectories>$(ProjectDir)Src;$(SolutionDir)..\..\..\..\Common\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Src;$(SolutionDir)..\..\..\..\..\Common\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ANDROID;GL_GLEXT_PROTOTYPES</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -214,20 +226,6 @@
       <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Common\Inc\esUtil.h" />
-    <ClInclude Include="Src\pch.h" />
-    <ClInclude Include="Src\android_native_app_glue.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Common\Src\esShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Common\Src\esShapes.cpp" />
-    <ClCompile Include="..\..\..\..\..\Common\Src\esTransform.cpp" />
-    <ClCompile Include="..\..\..\..\..\Common\Src\esUtil.cpp" />
-    <ClCompile Include="..\..\..\..\..\Common\Src\esUtil_Android.cpp" />
-    <ClCompile Include="..\..\..\Src\main.cpp" />
-    <ClCompile Include="Src\android_native_app_glue.c" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
