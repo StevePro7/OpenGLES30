@@ -15,7 +15,7 @@
     <ClInclude Include="Src\pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Common\Inc\esUtil.h">
+    <ClInclude Include="..\..\..\..\..\Common\Inc\esUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -23,22 +23,22 @@
     <ClCompile Include="Src\android_native_app_glue.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\Common\Src\esShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Common\Src\esShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\Common\Src\esShapes.cpp">
+    <ClCompile Include="..\..\..\..\..\Common\Src\esShapes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\Common\Src\esTransform.cpp">
+    <ClCompile Include="..\..\..\..\..\Common\Src\esTransform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\Common\Src\esUtil.cpp">
+    <ClCompile Include="..\..\..\..\..\Common\Src\esUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\Common\Src\esUtil_Android.cpp">
+    <ClCompile Include="..\..\..\..\..\Common\Src\esUtil_Android.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Src\main.cpp">
+    <ClCompile Include="..\..\..\Src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

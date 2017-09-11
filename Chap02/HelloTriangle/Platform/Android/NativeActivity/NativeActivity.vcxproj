@@ -35,17 +35,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\..\Common\Inc\esUtil.h" />
+    <ClInclude Include="..\..\..\..\..\Common\Inc\esUtil.h" />
     <ClInclude Include="Src\android_native_app_glue.h" />
     <ClInclude Include="Src\pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\..\Common\Src\esShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\..\Common\Src\esShapes.cpp" />
-    <ClCompile Include="..\..\..\..\..\..\Common\Src\esTransform.cpp" />
-    <ClCompile Include="..\..\..\..\..\..\Common\Src\esUtil.cpp" />
-    <ClCompile Include="..\..\..\..\..\..\Common\Src\esUtil_Android.cpp" />
-    <ClCompile Include="..\..\..\..\Src\main.cpp" />
+    <ClCompile Include="..\..\..\..\..\Common\Src\esShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Common\Src\esShapes.cpp" />
+    <ClCompile Include="..\..\..\..\..\Common\Src\esTransform.cpp" />
+    <ClCompile Include="..\..\..\..\..\Common\Src\esUtil.cpp" />
+    <ClCompile Include="..\..\..\..\..\Common\Src\esUtil_Android.cpp" />
+    <ClCompile Include="..\..\..\Src\main.cpp" />
     <ClCompile Include="Src\android_native_app_glue.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -209,7 +209,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Src\pch.h</PrecompiledHeaderFile>
       <CompileAs>CompileAsCpp</CompileAs>
-      <AdditionalIncludeDirectories>$(ProjectDir)Src;$(SolutionDir)..\..\..\..\..\Common\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Src;$(SolutionDir)..\..\..\..\Common\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ANDROID;GL_GLEXT_PROTOTYPES</PreprocessorDefinitions>
     </ClCompile>
     <Link>
