@@ -1,3 +1,0 @@
-# Android
-# Bin
-# Release
