@@ -56,9 +56,9 @@ extern "C" {
 #endif
 
 
-    ///
-    //  Macros
-    //
+///
+//  Macros
+//
 #ifdef WIN32
 #define ESUTIL_API  __cdecl
 #define ESCALLBACK  __cdecl
@@ -68,21 +68,21 @@ extern "C" {
 #endif
 
 
-    /// esCreateWindow flag - RGB color buffer
+/// esCreateWindow flag - RGB color buffer
 #define ES_WINDOW_RGB           0
-    /// esCreateWindow flag - ALPHA color buffer
+/// esCreateWindow flag - ALPHA color buffer
 #define ES_WINDOW_ALPHA         1
-    /// esCreateWindow flag - depth buffer
+/// esCreateWindow flag - depth buffer
 #define ES_WINDOW_DEPTH         2
-    /// esCreateWindow flag - stencil buffer
+/// esCreateWindow flag - stencil buffer
 #define ES_WINDOW_STENCIL       4
-    /// esCreateWindow flat - multi-sample buffer
+/// esCreateWindow flat - multi-sample buffer
 #define ES_WINDOW_MULTISAMPLE   8
 
 
-    ///
-    // Types
-    //
+///
+// Types
+//
 #ifndef FALSE
 #define FALSE 0
 #endif
@@ -99,7 +99,7 @@ extern "C" {
 
     struct ESContext
     {
-        /// Put platform specific data here
+    /// Put platform specific data here
         void       *platformData;
 
         /// Put your user data here...
@@ -220,8 +220,7 @@ extern "C" {
     /// \return The number of indices required for rendering the buffers (the number of indices stored in the indices array
     ///         if it is not NULL ) as a GL_TRIANGLE_STRIP
     //
-    int ESUTIL_API esGenSphere( int numSlices, float radius, GLfloat **vertices, GLfloat **normals,
-        GLfloat **texCoords, GLuint **indices );
+    int ESUTIL_API esGenSphere( int numSlices, float radius, GLfloat **vertices, GLfloat **normals, GLfloat **texCoords, GLuint **indices );
 
     //
     /// \brief Generates geometry for a cube.  Allocates memory for the vertex data and stores
@@ -234,8 +233,7 @@ extern "C" {
     /// \return The number of indices required for rendering the buffers (the number of indices stored in the indices array
     ///         if it is not NULL ) as a GL_TRIANGLES
     //
-    int ESUTIL_API esGenCube( float scale, GLfloat **vertices, GLfloat **normals,
-        GLfloat **texCoords, GLuint **indices );
+    int ESUTIL_API esGenCube( float scale, GLfloat **vertices, GLfloat **normals, GLfloat **texCoords, GLuint **indices );
 
     //
     /// \brief Generates a square grid consisting of triangles.  Allocates memory for the vertex data and stores

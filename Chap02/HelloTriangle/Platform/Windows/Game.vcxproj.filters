@@ -40,7 +40,7 @@
     <ClInclude Include="..\..\..\..\Common\Inc\esUtil_win.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="\Res\resource.h">
+    <ClInclude Include="Res\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

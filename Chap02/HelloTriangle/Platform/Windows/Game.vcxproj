@@ -29,7 +29,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Common\Inc\esUtil.h" />
     <ClInclude Include="..\..\..\..\Common\Inc\esUtil_win.h" />
-    <ClInclude Include="\Res\resource.h" />
+    <ClInclude Include="Res\resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\Res\Game.rc" />
