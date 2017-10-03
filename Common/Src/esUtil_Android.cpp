@@ -151,16 +151,3 @@ void android_main( struct android_app *pApp )
         }
     }
 }
-
-
-///
-//  WinCreate()
-//
-//      Create Win32 instance and window
-//
-//GLboolean WinCreate( ESContext *esContext, const char *title )
-//{
-//    // On Android, this does not need to do anything.  Everything happens from
-//    // android_main()
-//    return GL_TRUE;
-//}
