@@ -29,194 +29,225 @@
 // URLs:      http://www.opengles-book.com
 //            http://my.safaribooksonline.com/book/animation-and-3d/9780133440133
 //
-// Hello_Triangle.c
+// VertexBufferObjects.c
 //
-//    This is a simple example that draws a single triangle with
-//    a minimal vertex/fragment shader.  The purpose of this
-//    example is to demonstrate the basic concepts of
-//    OpenGL ES 3.0 rendering.
+//    This example demonstrates drawing a primitive with
+//    and without Vertex Buffer Objects (VBOs)
+//
 #include "esUtil.h"
 
 typedef struct
 {
-   // Handle to a program object
-   GLuint programObject;
+    // Handle to a program object
+    GLuint programObject;
+
+    // VertexBufferObject Ids
+    GLuint vboIds[2];
+
+    // x-offset uniform location
+    GLuint offsetLoc;
 
 } UserData;
 
-///
-// Create a shader object, load the shader source, and
-// compile the shader.
+
+#define VERTEX_POS_SIZE       3 // x, y and z
+#define VERTEX_COLOR_SIZE     4 // r, g, b, and a
+
+#define VERTEX_POS_INDX       0
+#define VERTEX_COLOR_INDX     1
+
+
+int Init( ESContext *esContext )
+{
+    UserData *userData = (UserData*)esContext->userData;
+    const char vShaderStr[] =
+        "#version 300 es                            \n"
+        "layout(location = 0) in vec4 a_position;   \n"
+        "layout(location = 1) in vec4 a_color;      \n"
+        "uniform float u_offset;                    \n"
+        "out vec4 v_color;                          \n"
+        "void main()                                \n"
+        "{                                          \n"
+        "    v_color = a_color;                     \n"
+        "    gl_Position = a_position;              \n"
+        "    gl_Position.x += u_offset;             \n"
+        "}";
+
+
+    const char fShaderStr[] =
+        "#version 300 es            \n"
+        "precision mediump float;   \n"
+        "in vec4 v_color;           \n"
+        "out vec4 o_fragColor;      \n"
+        "void main()                \n"
+        "{                          \n"
+        "    o_fragColor = v_color; \n"
+        "}";
+
+    GLuint programObject;
+
+    // Create the program object
+    programObject = esLoadProgram( vShaderStr, fShaderStr );
+
+    userData->offsetLoc = glGetUniformLocation( programObject, "u_offset" );
+
+    if( programObject == 0 )
+    {
+        return GL_FALSE;
+    }
+
+    // Store the program object
+    userData->programObject = programObject;
+    userData->vboIds[0] = 0;
+    userData->vboIds[1] = 0;
+
+    glClearColor( 1.0f, 1.0f, 1.0f, 0.0f );
+    return GL_TRUE;
+}
+
 //
-GLuint LoadShader ( GLenum type, const char *shaderSrc )
-{
-   GLuint shader;
-   GLint compiled;
-
-   // Create the shader object
-   shader = glCreateShader ( type );
-
-   if ( shader == 0 )
-   {
-      return 0;
-   }
-
-   // Load the shader source
-   glShaderSource ( shader, 1, &shaderSrc, NULL );
-
-   // Compile the shader
-   glCompileShader ( shader );
-
-   // Check the compile status
-   glGetShaderiv ( shader, GL_COMPILE_STATUS, &compiled );
-
-   if ( !compiled )
-   {
-      GLint infoLen = 0;
-
-      glGetShaderiv ( shader, GL_INFO_LOG_LENGTH, &infoLen );
-
-      if ( infoLen > 1 )
-      {
-         char *infoLog = (char *)malloc ( sizeof ( char ) * infoLen );
-
-         glGetShaderInfoLog ( shader, infoLen, NULL, infoLog );
-         esLogMessage ( "Error compiling shader:\n%s\n", infoLog );
-
-         free ( infoLog );
-      }
-
-      glDeleteShader ( shader );
-      return 0;
-   }
-
-   return shader;
-
-}
-
-///
-// Initialize the shader and program object
+// vertices   - pointer to a buffer that contains vertex
+//              attribute data
+// vtxStride  - stride of attribute data / vertex in bytes
+// numIndices - number of indices that make up primitive
+//              drawn as triangles
+// indices    - pointer to element index buffer.
 //
-int Init ( ESContext *esContext )
+void DrawPrimitiveWithoutVBOs( GLfloat *vertices,
+    GLint vtxStride,
+    GLint numIndices,
+    GLushort *indices )
 {
-   UserData *userData = (UserData*)esContext->userData;
-   char vShaderStr[] =
-      "#version 300 es                          \n"
-      "layout(location = 0) in vec4 vPosition;  \n"
-      "void main()                              \n"
-      "{                                        \n"
-      "   gl_Position = vPosition;              \n"
-      "}                                        \n";
+    GLfloat   *vtxBuf = vertices;
 
-   char fShaderStr[] =
-      "#version 300 es                              \n"
-      "precision mediump float;                     \n"
-      "out vec4 fragColor;                          \n"
-      "void main()                                  \n"
-      "{                                            \n"
-      "   fragColor = vec4 ( 0.5, 0.5, 0.0, 1.0 );  \n"
-      "}                                            \n";
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-   GLuint vertexShader;
-   GLuint fragmentShader;
-   GLuint programObject;
-   GLint linked;
+    glEnableVertexAttribArray( VERTEX_POS_INDX );
+    glEnableVertexAttribArray( VERTEX_COLOR_INDX );
 
-   // Load the vertex/fragment shaders
-   vertexShader = LoadShader ( GL_VERTEX_SHADER, vShaderStr );
-   fragmentShader = LoadShader ( GL_FRAGMENT_SHADER, fShaderStr );
+    glVertexAttribPointer( VERTEX_POS_INDX, VERTEX_POS_SIZE,
+        GL_FLOAT, GL_FALSE, vtxStride,
+        vtxBuf );
+    vtxBuf += VERTEX_POS_SIZE;
 
-   // Create the program object
-   programObject = glCreateProgram ( );
+    glVertexAttribPointer( VERTEX_COLOR_INDX,
+        VERTEX_COLOR_SIZE, GL_FLOAT,
+        GL_FALSE, vtxStride, vtxBuf );
 
-   if ( programObject == 0 )
-   {
-      return 0;
-   }
+    glDrawElements( GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT,
+        indices );
 
-   glAttachShader ( programObject, vertexShader );
-   glAttachShader ( programObject, fragmentShader );
+    glDisableVertexAttribArray( VERTEX_POS_INDX );
+    glDisableVertexAttribArray( VERTEX_COLOR_INDX );
 
-   // Link the program
-   glLinkProgram ( programObject );
-
-   // Check the link status
-   glGetProgramiv ( programObject, GL_LINK_STATUS, &linked );
-
-   if ( !linked )
-   {
-      GLint infoLen = 0;
-
-      glGetProgramiv ( programObject, GL_INFO_LOG_LENGTH, &infoLen );
-
-      if ( infoLen > 1 )
-      {
-         char *infoLog = (char *)malloc ( sizeof ( char ) * infoLen );
-
-         glGetProgramInfoLog ( programObject, infoLen, NULL, infoLog );
-         esLogMessage ( "Error linking program:\n%s\n", infoLog );
-
-         free ( infoLog );
-      }
-
-      glDeleteProgram ( programObject );
-      return FALSE;
-   }
-
-   // Store the program object
-   userData->programObject = programObject;
-
-   glClearColor ( 1.0f, 1.0f, 1.0f, 0.0f );
-   return TRUE;
 }
 
-///
-// Draw a triangle using the shader pair created in Init()
-//
-void Draw ( ESContext *esContext )
+void DrawPrimitiveWithVBOs( ESContext *esContext,
+    GLint numVertices, GLfloat *vtxBuf,
+    GLint vtxStride, GLint numIndices,
+    GLushort *indices )
 {
-   UserData *userData = (UserData*)esContext->userData;
-   GLfloat vVertices[] = {  0.0f,  0.5f, 0.0f,
-                            -0.5f, -0.5f, 0.0f,
-                            0.5f, -0.5f, 0.0f
-                         };
+    UserData *userData = (UserData*)esContext->userData;
+    GLuint   offset = 0;
 
-   // Set the viewport
-   glViewport ( 0, 0, esContext->width, esContext->height );
+    // vboIds[0] - used to store vertex attribute data
+    // vboIds[l] - used to store element indices
+    if( userData->vboIds[0] == 0 && userData->vboIds[1] == 0 )
+    {
+        // Only allocate on the first draw
+        glGenBuffers( 2, userData->vboIds );
 
-   // Clear the color buffer
-   glClear ( GL_COLOR_BUFFER_BIT );
+        glBindBuffer( GL_ARRAY_BUFFER, userData->vboIds[0] );
+        glBufferData( GL_ARRAY_BUFFER, vtxStride * numVertices,
+            vtxBuf, GL_STATIC_DRAW );
+        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, userData->vboIds[1] );
+        glBufferData( GL_ELEMENT_ARRAY_BUFFER,
+            sizeof( GLushort ) * numIndices,
+            indices, GL_STATIC_DRAW );
+    }
 
-   // Use the program object
-   glUseProgram ( userData->programObject );
+    glBindBuffer( GL_ARRAY_BUFFER, userData->vboIds[0] );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, userData->vboIds[1] );
 
-   // Load the vertex data
-   glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 0, vVertices );
-   glEnableVertexAttribArray ( 0 );
+    glEnableVertexAttribArray( VERTEX_POS_INDX );
+    glEnableVertexAttribArray( VERTEX_COLOR_INDX );
 
-   glDrawArrays ( GL_TRIANGLES, 0, 3 );
+    glVertexAttribPointer( VERTEX_POS_INDX, VERTEX_POS_SIZE,
+        GL_FLOAT, GL_FALSE, vtxStride,
+        (const void *)offset );
+
+    offset += VERTEX_POS_SIZE * sizeof( GLfloat );
+    glVertexAttribPointer( VERTEX_COLOR_INDX,
+        VERTEX_COLOR_SIZE,
+        GL_FLOAT, GL_FALSE, vtxStride,
+        (const void *)offset );
+
+    glDrawElements( GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT,
+        0 );
+
+    glDisableVertexAttribArray( VERTEX_POS_INDX );
+    glDisableVertexAttribArray( VERTEX_COLOR_INDX );
+
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 }
 
-void Shutdown ( ESContext *esContext )
+void Draw( ESContext *esContext )
 {
-   UserData *userData = (UserData*)esContext->userData;
+    UserData *userData = (UserData*)esContext->userData;
 
-   glDeleteProgram ( userData->programObject );
+    // 3 vertices, with (x,y,z) ,(r, g, b, a) per-vertex
+    GLfloat vertices[3 * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE)] =
+    {
+        -0.5f, 0.5f, 0.0f,        // v0
+        1.0f, 0.0f, 0.0f, 1.0f,  // c0
+        -1.0f, -0.5f, 0.0f,        // v1
+        0.0f, 1.0f, 0.0f, 1.0f,  // c1
+        0.0f, -0.5f, 0.0f,        // v2
+        0.0f, 0.0f, 1.0f, 1.0f,  // c2
+    };
+    // Index buffer data
+    GLushort indices[3] = { 0, 1, 2 };
+
+    glViewport( 0, 0, esContext->width, esContext->height );
+    glClear( GL_COLOR_BUFFER_BIT );
+    glUseProgram( userData->programObject );
+    glUniform1f( userData->offsetLoc, 0.0f );
+
+    DrawPrimitiveWithoutVBOs( vertices,
+        sizeof( GLfloat ) * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE),
+        3, indices );
+
+    // Offset the vertex positions so both can be seen
+    glUniform1f( userData->offsetLoc, 1.0f );
+
+    DrawPrimitiveWithVBOs( esContext, 3, vertices,
+        sizeof( GLfloat ) * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE),
+        3, indices );
 }
 
-int esMain ( ESContext *esContext )
+void Shutdown( ESContext *esContext )
 {
-   esContext->userData = malloc ( sizeof ( UserData ) );
+    UserData *userData = (UserData*)esContext->userData;
 
-   esCreateWindow ( esContext, "Hello Triangle", 320, 240, ES_WINDOW_RGB );
+    glDeleteProgram( userData->programObject );
+    glDeleteBuffers( 2, userData->vboIds );
+}
 
-   if ( !Init ( esContext ) )
-   {
-      return GL_FALSE;
-   }
+int esMain( ESContext *esContext )
+{
+    esContext->userData = malloc( sizeof( UserData ) );
 
-   esRegisterShutdownFunc ( esContext, Shutdown );
-   esRegisterDrawFunc ( esContext, Draw );
+    esCreateWindow( esContext, "VertexBufferObjects", 320, 240, ES_WINDOW_RGB );
 
-   return GL_TRUE;
+    if( !Init( esContext ) )
+    {
+        return GL_FALSE;
+    }
+
+    esRegisterShutdownFunc( esContext, Shutdown );
+    esRegisterDrawFunc( esContext, Draw );
+
+    return GL_TRUE;
 }
