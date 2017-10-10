@@ -4,7 +4,6 @@
 *.xcuserstate
 *.vs*
 *.so*
-*Bin*
 *Obj*
 *ARM*
 *ARM64*
