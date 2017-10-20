@@ -149,6 +149,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)Res;$(SolutionDir)Dep\Inc;$(SolutionDir)..\..\..\..\Common\Inc</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile />
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
