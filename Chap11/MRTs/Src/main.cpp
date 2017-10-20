@@ -29,11 +29,15 @@
 // URLs:      http://www.opengles-book.com
 //            http://my.safaribooksonline.com/book/animation-and-3d/9780133440133
 //
-// VertexArrayObjects.c
+// MRTs.c
 //
-//    This example demonstrates drawing a primitive with
-//    Vertex Array Objects (VAOs)
+//    This is an example to demonstrate Multiple Render Targets and framebuffer blits.
+//    First, we will render a quad that outputs four colors (red, green, blue, gray)
+//    per fragment using MRTs.
+//    Then, we will copy the four color buffers into four screen quadrants
+//    using framebuffer blits.
 //
+#include <stdlib.h>
 #include "esUtil.h"
 
 typedef struct
@@ -41,154 +45,244 @@ typedef struct
     // Handle to a program object
     GLuint programObject;
 
-    // VertexBufferObject Ids
-    GLuint vboIds[2];
+    // Handle to a framebuffer object
+    GLuint fbo;
 
-    // VertexArrayObject Id
-    GLuint vaoId;
+    // Texture handle
+    GLuint colorTexId[4];
+
+    // Texture size
+    GLsizei textureWidth;
+    GLsizei textureHeight;
 
 } UserData;
 
-
-#define VERTEX_POS_SIZE       3 // x, y and z
-#define VERTEX_COLOR_SIZE     4 // r, g, b, and a
-
-#define VERTEX_POS_INDX       0
-#define VERTEX_COLOR_INDX     1
-
-#define VERTEX_STRIDE         ( sizeof(GLfloat) *     \
-                                ( VERTEX_POS_SIZE +    \
-                                  VERTEX_COLOR_SIZE ) )
-
-
-int Init( ESContext *esContext )
+///
+// Initialize the framebuffer object and MRTs
+//
+int InitFBO( ESContext *esContext )
 {
-    UserData *userData = (UserData*)esContext->userData;
-    const char vShaderStr[] =
-        "#version 300 es                            \n"
-        "layout(location = 0) in vec4 a_position;   \n"
-        "layout(location = 1) in vec4 a_color;      \n"
-        "out vec4 v_color;                          \n"
-        "void main()                                \n"
-        "{                                          \n"
-        "    v_color = a_color;                     \n"
-        "    gl_Position = a_position;              \n"
-        "}";
-
-
-    const char fShaderStr[] =
-        "#version 300 es            \n"
-        "precision mediump float;   \n"
-        "in vec4 v_color;           \n"
-        "out vec4 o_fragColor;      \n"
-        "void main()                \n"
-        "{                          \n"
-        "    o_fragColor = v_color; \n"
-        "}";
-
-    GLuint programObject;
-
-    // 3 vertices, with (x,y,z) ,(r, g, b, a) per-vertex
-    GLfloat vertices[3 * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE)] =
+    UserData *userData = (UserData *)esContext->userData;
+    int i;
+    GLint defaultFramebuffer = 0;
+    const GLenum attachments[4] =
     {
-        0.0f, 0.5f, 0.0f,        // v0
-        1.0f, 0.0f, 0.0f, 1.0f,  // c0
-        -0.5f, -0.5f, 0.0f,        // v1
-        0.0f, 1.0f, 0.0f, 1.0f,  // c1
-        0.5f, -0.5f, 0.0f,        // v2
-        0.0f, 0.0f, 1.0f, 1.0f,  // c2
+        GL_COLOR_ATTACHMENT0,
+        GL_COLOR_ATTACHMENT1,
+        GL_COLOR_ATTACHMENT2,
+        GL_COLOR_ATTACHMENT3
     };
-    // Index buffer data
-    GLushort indices[3] = { 0, 1, 2 };
 
-    // Create the program object
-    programObject = esLoadProgram( vShaderStr, fShaderStr );
+    glGetIntegerv( GL_FRAMEBUFFER_BINDING, &defaultFramebuffer );
 
-    if( programObject == 0 )
+    // Setup fbo
+    glGenFramebuffers( 1, &userData->fbo );
+    glBindFramebuffer( GL_FRAMEBUFFER, userData->fbo );
+
+    // Setup four output buffers and attach to fbo
+    userData->textureHeight = userData->textureWidth = 400;
+    glGenTextures( 4, &userData->colorTexId[0] );
+    for( i = 0; i < 4; ++i )
     {
-        return GL_FALSE;
+        glBindTexture( GL_TEXTURE_2D, userData->colorTexId[i] );
+
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA,
+            userData->textureWidth, userData->textureHeight,
+            0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+
+        // Set the filtering mode
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+
+        glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, attachments[i],
+            GL_TEXTURE_2D, userData->colorTexId[i], 0 );
     }
 
-    // Store the program object
-    userData->programObject = programObject;
+    glDrawBuffers( 4, attachments );
 
-    // Generate VBO Ids and load the VBOs with data
-    glGenBuffers( 2, userData->vboIds );
+    if( GL_FRAMEBUFFER_COMPLETE != glCheckFramebufferStatus( GL_FRAMEBUFFER ) )
+    {
+        return FALSE;
+    }
 
-    glBindBuffer( GL_ARRAY_BUFFER, userData->vboIds[0] );
-    glBufferData( GL_ARRAY_BUFFER, sizeof( vertices ),
-        vertices, GL_STATIC_DRAW );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, userData->vboIds[1] );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( indices ),
-        indices, GL_STATIC_DRAW );
+    // Restore the original framebuffer
+    glBindFramebuffer( GL_FRAMEBUFFER, defaultFramebuffer );
 
-    // Generate VAO Id
-    glGenVertexArrays( 1, &userData->vaoId );
+    return TRUE;
+}
 
-    // Bind the VAO and then setup the vertex
-    // attributes
-    glBindVertexArray( userData->vaoId );
+///
+// Initialize the shader and program object
+//
+int Init( ESContext *esContext )
+{
+    UserData *userData = (UserData *)esContext->userData;
+    char vShaderStr[] =
+        "#version 300 es                            \n"
+        "layout(location = 0) in vec4 a_position;   \n"
+        "void main()                                \n"
+        "{                                          \n"
+        "   gl_Position = a_position;               \n"
+        "}                                          \n";
 
-    glBindBuffer( GL_ARRAY_BUFFER, userData->vboIds[0] );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, userData->vboIds[1] );
+    char fShaderStr[] =
+        "#version 300 es                                     \n"
+        "precision mediump float;                            \n"
+        "layout(location = 0) out vec4 fragData0;            \n"
+        "layout(location = 1) out vec4 fragData1;            \n"
+        "layout(location = 2) out vec4 fragData2;            \n"
+        "layout(location = 3) out vec4 fragData3;            \n"
+        "void main()                                         \n"
+        "{                                                   \n"
+        "  // first buffer will contain red color            \n"
+        "  fragData0 = vec4 ( 1, 0, 0, 1 );                  \n"
+        "                                                    \n"
+        "  // second buffer will contain green color         \n"
+        "  fragData1 = vec4 ( 0, 1, 0, 1 );                  \n"
+        "                                                    \n"
+        "  // third buffer will contain blue color           \n"
+        "  fragData2 = vec4 ( 0, 0, 1, 1 );                  \n"
+        "                                                    \n"
+        "  // fourth buffer will contain gray color          \n"
+        "  fragData3 = vec4 ( 0.5, 0.5, 0.5, 1 );            \n"
+        "}                                                   \n";
 
-    glEnableVertexAttribArray( VERTEX_POS_INDX );
-    glEnableVertexAttribArray( VERTEX_COLOR_INDX );
+    // Load the shaders and get a linked program object
+    userData->programObject = esLoadProgram( vShaderStr, fShaderStr );
 
-    glVertexAttribPointer( VERTEX_POS_INDX, VERTEX_POS_SIZE,
-        GL_FLOAT, GL_FALSE, VERTEX_STRIDE, (const void *)0 );
-
-    glVertexAttribPointer( VERTEX_COLOR_INDX, VERTEX_COLOR_SIZE,
-        GL_FLOAT, GL_FALSE, VERTEX_STRIDE,
-        (const void *)(VERTEX_POS_SIZE * sizeof( GLfloat )) );
-
-    // Reset to the default VAO
-    glBindVertexArray( 0 );
+    InitFBO( esContext );
 
     glClearColor( 1.0f, 1.0f, 1.0f, 0.0f );
-    return GL_TRUE;
+    return TRUE;
 }
 
-void Draw( ESContext *esContext )
+///
+// Draw a quad and output four colors per pixel
+//
+void DrawGeometry( ESContext *esContext )
 {
-    UserData *userData = (UserData*)esContext->userData;
+    UserData *userData = (UserData *)esContext->userData;
+    GLfloat vVertices[] = { -1.0f, 1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,
+    };
+    GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
 
+    // Set the viewport
     glViewport( 0, 0, esContext->width, esContext->height );
+
+    // Clear the color buffer
     glClear( GL_COLOR_BUFFER_BIT );
+
+    // Use the program object
     glUseProgram( userData->programObject );
 
-    // Bind the VAO
-    glBindVertexArray( userData->vaoId );
+    // Load the vertex position
+    glVertexAttribPointer( 0, 3, GL_FLOAT,
+        GL_FALSE, 3 * sizeof( GLfloat ), vVertices );
+    glEnableVertexAttribArray( 0 );
 
-    // Draw with the VAO settings
-    glDrawElements( GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, (const void *)0 );
-
-    // Return to the default VAO
-    glBindVertexArray( 0 );
+    // Draw a quad
+    glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
 }
 
-void Shutdown( ESContext *esContext )
+///
+// Copy MRT output buffers to screen
+//
+void BlitTextures( ESContext *esContext )
 {
-    UserData *userData = (UserData*)esContext->userData;
+    UserData *userData = (UserData *)esContext->userData;
 
+    // set the fbo for reading
+    glBindFramebuffer( GL_READ_FRAMEBUFFER, userData->fbo );
+
+    // Copy the output red buffer to lower left quadrant
+    glReadBuffer( GL_COLOR_ATTACHMENT0 );
+    glBlitFramebuffer( 0, 0, userData->textureWidth, userData->textureHeight,
+        0, 0, esContext->width / 2, esContext->height / 2,
+        GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+    // Copy the output green buffer to lower right quadrant
+    glReadBuffer( GL_COLOR_ATTACHMENT1 );
+    glBlitFramebuffer( 0, 0, userData->textureWidth, userData->textureHeight,
+        esContext->width / 2, 0, esContext->width, esContext->height / 2,
+        GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+    // Copy the output blue buffer to upper left quadrant
+    glReadBuffer( GL_COLOR_ATTACHMENT2 );
+    glBlitFramebuffer( 0, 0, userData->textureWidth, userData->textureHeight,
+        0, esContext->height / 2, esContext->width / 2, esContext->height,
+        GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+    // Copy the output gray buffer to upper right quadrant
+    glReadBuffer( GL_COLOR_ATTACHMENT3 );
+    glBlitFramebuffer( 0, 0, userData->textureWidth, userData->textureHeight,
+        esContext->width / 2, esContext->height / 2, esContext->width, esContext->height,
+        GL_COLOR_BUFFER_BIT, GL_LINEAR );
+}
+
+///
+// Render to MRTs and screen
+//
+void Draw( ESContext *esContext )
+{
+    UserData *userData = (UserData *)esContext->userData;
+    GLint defaultFramebuffer = 0;
+    const GLenum attachments[4] =
+    {
+        GL_COLOR_ATTACHMENT0,
+        GL_COLOR_ATTACHMENT1,
+        GL_COLOR_ATTACHMENT2,
+        GL_COLOR_ATTACHMENT3
+    };
+
+    glGetIntegerv( GL_FRAMEBUFFER_BINDING, &defaultFramebuffer );
+
+    // FIRST: use MRTs to output four colors to four buffers
+    glBindFramebuffer( GL_FRAMEBUFFER, userData->fbo );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    glDrawBuffers( 4, attachments );
+    DrawGeometry( esContext );
+
+    // SECOND: copy the four output buffers into four window quadrants
+    // with framebuffer blits
+
+    // Restore the default framebuffer
+    glBindFramebuffer( GL_DRAW_FRAMEBUFFER, defaultFramebuffer );
+    BlitTextures( esContext );
+}
+
+///
+// Cleanup
+//
+void ShutDown( ESContext *esContext )
+{
+    UserData *userData = (UserData *)esContext->userData;
+
+    // Delete texture objects
+    glDeleteTextures( 4, userData->colorTexId );
+
+    // Delete fbo
+    glDeleteFramebuffers( 1, &userData->fbo );
+
+    // Delete program object
     glDeleteProgram( userData->programObject );
-    glDeleteBuffers( 2, userData->vboIds );
-    glDeleteVertexArrays( 1, &userData->vaoId );
 }
 
 int esMain( ESContext *esContext )
 {
     esContext->userData = malloc( sizeof( UserData ) );
 
-    esCreateWindow( esContext, "VertexArrayObjects", 320, 240, ES_WINDOW_RGB );
+    esCreateWindow( esContext, "Multiple Render Targets", 400, 400, ES_WINDOW_RGB | ES_WINDOW_ALPHA );
 
     if( !Init( esContext ) )
     {
         return GL_FALSE;
     }
 
-    esRegisterShutdownFunc( esContext, Shutdown );
     esRegisterDrawFunc( esContext, Draw );
+    esRegisterShutdownFunc( esContext, ShutDown );
 
     return GL_TRUE;
 }

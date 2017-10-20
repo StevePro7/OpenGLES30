@@ -29,166 +29,285 @@
 // URLs:      http://www.opengles-book.com
 //            http://my.safaribooksonline.com/book/animation-and-3d/9780133440133
 //
-// VertexArrayObjects.c
+// ParticleSystem.c
 //
-//    This example demonstrates drawing a primitive with
-//    Vertex Array Objects (VAOs)
+//    This is an example that demonstrates rendering a particle system
+//    using a vertex shader and point sprites.
 //
+#include <stdlib.h>
+#include <math.h>
 #include "esUtil.h"
+
+#define NUM_PARTICLES   1000
+#define PARTICLE_SIZE   7
+
+#define ATTRIBUTE_LIFETIME_LOCATION       0
+#define ATTRIBUTE_STARTPOSITION_LOCATION  1
+#define ATTRIBUTE_ENDPOSITION_LOCATION    2
 
 typedef struct
 {
     // Handle to a program object
     GLuint programObject;
 
-    // VertexBufferObject Ids
-    GLuint vboIds[2];
+    // Uniform location
+    GLint timeLoc;
+    GLint colorLoc;
+    GLint centerPositionLoc;
+    GLint samplerLoc;
 
-    // VertexArrayObject Id
-    GLuint vaoId;
+    // Texture handle
+    GLuint textureId;
+
+    // Particle vertex data
+    float particleData[NUM_PARTICLES * PARTICLE_SIZE];
+
+    // Current time
+    float time;
 
 } UserData;
 
-
-#define VERTEX_POS_SIZE       3 // x, y and z
-#define VERTEX_COLOR_SIZE     4 // r, g, b, and a
-
-#define VERTEX_POS_INDX       0
-#define VERTEX_COLOR_INDX     1
-
-#define VERTEX_STRIDE         ( sizeof(GLfloat) *     \
-                                ( VERTEX_POS_SIZE +    \
-                                  VERTEX_COLOR_SIZE ) )
-
-
-int Init( ESContext *esContext )
+///
+// Load texture from disk
+//
+GLuint LoadTexture( void *ioContext, char *fileName )
 {
-    UserData *userData = (UserData*)esContext->userData;
-    const char vShaderStr[] =
-        "#version 300 es                            \n"
-        "layout(location = 0) in vec4 a_position;   \n"
-        "layout(location = 1) in vec4 a_color;      \n"
-        "out vec4 v_color;                          \n"
-        "void main()                                \n"
-        "{                                          \n"
-        "    v_color = a_color;                     \n"
-        "    gl_Position = a_position;              \n"
-        "}";
+    int width,
+        height;
+    char *buffer = esLoadTGA( ioContext, fileName, &width, &height );
+    GLuint texId;
 
-
-    const char fShaderStr[] =
-        "#version 300 es            \n"
-        "precision mediump float;   \n"
-        "in vec4 v_color;           \n"
-        "out vec4 o_fragColor;      \n"
-        "void main()                \n"
-        "{                          \n"
-        "    o_fragColor = v_color; \n"
-        "}";
-
-    GLuint programObject;
-
-    // 3 vertices, with (x,y,z) ,(r, g, b, a) per-vertex
-    GLfloat vertices[3 * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE)] =
+    if( buffer == NULL )
     {
-        0.0f, 0.5f, 0.0f,        // v0
-        1.0f, 0.0f, 0.0f, 1.0f,  // c0
-        -0.5f, -0.5f, 0.0f,        // v1
-        0.0f, 1.0f, 0.0f, 1.0f,  // c1
-        0.5f, -0.5f, 0.0f,        // v2
-        0.0f, 0.0f, 1.0f, 1.0f,  // c2
-    };
-    // Index buffer data
-    GLushort indices[3] = { 0, 1, 2 };
-
-    // Create the program object
-    programObject = esLoadProgram( vShaderStr, fShaderStr );
-
-    if( programObject == 0 )
-    {
-        return GL_FALSE;
+        esLogMessage( "Error loading (%s) image.\n", fileName );
+        return 0;
     }
 
-    // Store the program object
-    userData->programObject = programObject;
+    glGenTextures( 1, &texId );
+    glBindTexture( GL_TEXTURE_2D, texId );
 
-    // Generate VBO Ids and load the VBOs with data
-    glGenBuffers( 2, userData->vboIds );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, buffer );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-    glBindBuffer( GL_ARRAY_BUFFER, userData->vboIds[0] );
-    glBufferData( GL_ARRAY_BUFFER, sizeof( vertices ),
-        vertices, GL_STATIC_DRAW );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, userData->vboIds[1] );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( indices ),
-        indices, GL_STATIC_DRAW );
+    free( buffer );
 
-    // Generate VAO Id
-    glGenVertexArrays( 1, &userData->vaoId );
-
-    // Bind the VAO and then setup the vertex
-    // attributes
-    glBindVertexArray( userData->vaoId );
-
-    glBindBuffer( GL_ARRAY_BUFFER, userData->vboIds[0] );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, userData->vboIds[1] );
-
-    glEnableVertexAttribArray( VERTEX_POS_INDX );
-    glEnableVertexAttribArray( VERTEX_COLOR_INDX );
-
-    glVertexAttribPointer( VERTEX_POS_INDX, VERTEX_POS_SIZE,
-        GL_FLOAT, GL_FALSE, VERTEX_STRIDE, (const void *)0 );
-
-    glVertexAttribPointer( VERTEX_COLOR_INDX, VERTEX_COLOR_SIZE,
-        GL_FLOAT, GL_FALSE, VERTEX_STRIDE,
-        (const void *)(VERTEX_POS_SIZE * sizeof( GLfloat )) );
-
-    // Reset to the default VAO
-    glBindVertexArray( 0 );
-
-    glClearColor( 1.0f, 1.0f, 1.0f, 0.0f );
-    return GL_TRUE;
+    return texId;
 }
 
-void Draw( ESContext *esContext )
-{
-    UserData *userData = (UserData*)esContext->userData;
 
-    glViewport( 0, 0, esContext->width, esContext->height );
-    glClear( GL_COLOR_BUFFER_BIT );
+///
+// Initialize the shader and program object
+//
+int Init( ESContext *esContext )
+{
+    UserData *userData = (UserData *)esContext->userData;
+    int i;
+
+    char vShaderStr[] =
+        "#version 300 es                                      \n"
+        "uniform float u_time;                                \n"
+        "uniform vec3 u_centerPosition;                       \n"
+        "layout(location = 0) in float a_lifetime;            \n"
+        "layout(location = 1) in vec3 a_startPosition;        \n"
+        "layout(location = 2) in vec3 a_endPosition;          \n"
+        "out float v_lifetime;                                \n"
+        "void main()                                          \n"
+        "{                                                    \n"
+        "  if ( u_time <= a_lifetime )                        \n"
+        "  {                                                  \n"
+        "    gl_Position.xyz = a_startPosition +              \n"
+        "                      (u_time * a_endPosition);      \n"
+        "    gl_Position.xyz += u_centerPosition;             \n"
+        "    gl_Position.w = 1.0;                             \n"
+        "  }                                                  \n"
+        "  else                                               \n"
+        "  {                                                  \n"
+        "     gl_Position = vec4( -1000, -1000, 0, 0 );       \n"
+        "  }                                                  \n"
+        "  v_lifetime = 1.0 - ( u_time / a_lifetime );        \n"
+        "  v_lifetime = clamp ( v_lifetime, 0.0, 1.0 );       \n"
+        "  gl_PointSize = ( v_lifetime * v_lifetime ) * 40.0; \n"
+        "}";
+
+    char fShaderStr[] =
+        "#version 300 es                                      \n"
+        "precision mediump float;                             \n"
+        "uniform vec4 u_color;                                \n"
+        "in float v_lifetime;                                 \n"
+        "layout(location = 0) out vec4 fragColor;             \n"
+        "uniform sampler2D s_texture;                         \n"
+        "void main()                                          \n"
+        "{                                                    \n"
+        "  vec4 texColor;                                     \n"
+        "  texColor = texture( s_texture, gl_PointCoord );    \n"
+        "  fragColor = vec4( u_color ) * texColor;            \n"
+        "  fragColor.a *= v_lifetime;                         \n"
+        "}                                                    \n";
+
+    // Load the shaders and get a linked program object
+    userData->programObject = esLoadProgram( vShaderStr, fShaderStr );
+
+    // Get the uniform locations
+    userData->timeLoc = glGetUniformLocation( userData->programObject, "u_time" );
+    userData->centerPositionLoc = glGetUniformLocation( userData->programObject, "u_centerPosition" );
+    userData->colorLoc = glGetUniformLocation( userData->programObject, "u_color" );
+    userData->samplerLoc = glGetUniformLocation( userData->programObject, "s_texture" );
+
+    glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
+
+    // Fill in particle data array
+    srand( 0 );
+
+    for( i = 0; i < NUM_PARTICLES; i++ )
+    {
+        float *particleData = &userData->particleData[i * PARTICLE_SIZE];
+
+        // Lifetime of particle
+        (*particleData++) = ((float)(rand() % 10000) / 10000.0f);
+
+        // End position of particle
+        (*particleData++) = ((float)(rand() % 10000) / 5000.0f) - 1.0f;
+        (*particleData++) = ((float)(rand() % 10000) / 5000.0f) - 1.0f;
+        (*particleData++) = ((float)(rand() % 10000) / 5000.0f) - 1.0f;
+
+        // Start position of particle
+        (*particleData++) = ((float)(rand() % 10000) / 40000.0f) - 0.125f;
+        (*particleData++) = ((float)(rand() % 10000) / 40000.0f) - 0.125f;
+        (*particleData++) = ((float)(rand() % 10000) / 40000.0f) - 0.125f;
+
+    }
+
+    // Initialize time to cause reset on first update
+    userData->time = 1.0f;
+
+    userData->textureId = LoadTexture( esContext->platformData, "smoke.tga" );
+
+    if( userData->textureId <= 0 )
+    {
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+///
+//  Update time-based variables
+//
+void Update( ESContext *esContext, float deltaTime )
+{
+    UserData *userData = (UserData *)esContext->userData;
+
+    userData->time += deltaTime;
+
     glUseProgram( userData->programObject );
 
-    // Bind the VAO
-    glBindVertexArray( userData->vaoId );
+    if( userData->time >= 1.0f )
+    {
+        float centerPos[3];
+        float color[4];
 
-    // Draw with the VAO settings
-    glDrawElements( GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, (const void *)0 );
+        userData->time = 0.0f;
 
-    // Return to the default VAO
-    glBindVertexArray( 0 );
+        // Pick a new start location and color
+        centerPos[0] = ((float)(rand() % 10000) / 10000.0f) - 0.5f;
+        centerPos[1] = ((float)(rand() % 10000) / 10000.0f) - 0.5f;
+        centerPos[2] = ((float)(rand() % 10000) / 10000.0f) - 0.5f;
+
+        glUniform3fv( userData->centerPositionLoc, 1, &centerPos[0] );
+
+        // Random color
+        color[0] = ((float)(rand() % 10000) / 20000.0f) + 0.5f;
+        color[1] = ((float)(rand() % 10000) / 20000.0f) + 0.5f;
+        color[2] = ((float)(rand() % 10000) / 20000.0f) + 0.5f;
+        color[3] = 0.5;
+
+        glUniform4fv( userData->colorLoc, 1, &color[0] );
+    }
+
+    // Load uniform time variable
+    glUniform1f( userData->timeLoc, userData->time );
 }
 
-void Shutdown( ESContext *esContext )
+///
+// Draw a triangle using the shader pair created in Init()
+//
+void Draw( ESContext *esContext )
 {
-    UserData *userData = (UserData*)esContext->userData;
+    UserData *userData = (UserData *)esContext->userData;
 
-    glDeleteProgram( userData->programObject );
-    glDeleteBuffers( 2, userData->vboIds );
-    glDeleteVertexArrays( 1, &userData->vaoId );
+    // Set the viewport
+    glViewport( 0, 0, esContext->width, esContext->height );
+
+    // Clear the color buffer
+    glClear( GL_COLOR_BUFFER_BIT );
+
+    // Use the program object
+    glUseProgram( userData->programObject );
+
+    // Load the vertex attributes
+    glVertexAttribPointer( ATTRIBUTE_LIFETIME_LOCATION, 1, GL_FLOAT,
+        GL_FALSE, PARTICLE_SIZE * sizeof( GLfloat ),
+        userData->particleData );
+
+    glVertexAttribPointer( ATTRIBUTE_ENDPOSITION_LOCATION, 3, GL_FLOAT,
+        GL_FALSE, PARTICLE_SIZE * sizeof( GLfloat ),
+        &userData->particleData[1] );
+
+    glVertexAttribPointer( ATTRIBUTE_STARTPOSITION_LOCATION, 3, GL_FLOAT,
+        GL_FALSE, PARTICLE_SIZE * sizeof( GLfloat ),
+        &userData->particleData[4] );
+
+
+    glEnableVertexAttribArray( ATTRIBUTE_LIFETIME_LOCATION );
+    glEnableVertexAttribArray( ATTRIBUTE_ENDPOSITION_LOCATION );
+    glEnableVertexAttribArray( ATTRIBUTE_STARTPOSITION_LOCATION );
+
+    // Blend particles
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+
+    // Bind the texture
+    glActiveTexture( GL_TEXTURE0 );
+    glBindTexture( GL_TEXTURE_2D, userData->textureId );
+
+    // Set the sampler texture unit to 0
+    glUniform1i( userData->samplerLoc, 0 );
+
+    glDrawArrays( GL_POINTS, 0, NUM_PARTICLES );
 }
+
+///
+// Cleanup
+//
+void ShutDown( ESContext *esContext )
+{
+    UserData *userData = (UserData *)esContext->userData;
+
+    // Delete texture object
+    glDeleteTextures( 1, &userData->textureId );
+
+    // Delete program object
+    glDeleteProgram( userData->programObject );
+}
+
 
 int esMain( ESContext *esContext )
 {
     esContext->userData = malloc( sizeof( UserData ) );
 
-    esCreateWindow( esContext, "VertexArrayObjects", 320, 240, ES_WINDOW_RGB );
+    esCreateWindow( esContext, "ParticleSystem", 640, 480, ES_WINDOW_RGB );
 
     if( !Init( esContext ) )
     {
         return GL_FALSE;
     }
 
-    esRegisterShutdownFunc( esContext, Shutdown );
     esRegisterDrawFunc( esContext, Draw );
+    esRegisterUpdateFunc( esContext, Update );
+    esRegisterShutdownFunc( esContext, ShutDown );
 
     return GL_TRUE;
 }
