@@ -25,10 +25,12 @@
     <ClCompile Include="..\..\..\..\Common\Src\esUtil.cpp" />
     <ClCompile Include="..\..\..\..\Common\Src\esUtil_win32.cpp" />
     <ClCompile Include="..\..\Src\main.cpp" />
+    <ClCompile Include="..\..\Src\Noise3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Common\Inc\esUtil.h" />
     <ClInclude Include="..\..\..\..\Common\Inc\esUtil_win.h" />
+    <ClInclude Include="..\..\Src\Noise3D.h" />
     <ClInclude Include="Res\resource.h" />
   </ItemGroup>
   <ItemGroup>
