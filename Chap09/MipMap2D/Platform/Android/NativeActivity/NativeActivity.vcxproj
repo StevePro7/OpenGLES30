@@ -172,6 +172,7 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <AdditionalIncludeDirectories>$(ProjectDir)Src;$(SolutionDir)..\..\..\..\Common\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ANDROID;GL_GLEXT_PROTOTYPES</PreprocessorDefinitions>
+      <CppLanguageStandard>c++11</CppLanguageStandard>
     </ClCompile>
     <Link>
       <LibraryDependencies>%(LibraryDependencies);log;GLESv3;EGL;m;</LibraryDependencies>
