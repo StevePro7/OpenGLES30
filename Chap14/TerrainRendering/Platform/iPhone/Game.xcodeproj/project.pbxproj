@@ -24,6 +24,7 @@
 		80245B001F62D88100141627 /* esShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80245AFD1F62D88100141627 /* esShapes.cpp */; };
 		80245B011F62D88100141627 /* esTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80245AFE1F62D88100141627 /* esTransform.cpp */; };
 		80245B031F62D8D000141627 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80245B021F62D8D000141627 /* main.cpp */; };
+		8042CFA91F9B5DEE005B7B92 /* heightmap.tga in Resources */ = {isa = PBXBuildFile; fileRef = 8042CFA81F9B5DEE005B7B92 /* heightmap.tga */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 		80245AFD1F62D88100141627 /* esShapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = esShapes.cpp; path = ../../../../Common/Src/esShapes.cpp; sourceTree = "<group>"; };
 		80245AFE1F62D88100141627 /* esTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = esTransform.cpp; path = ../../../../Common/Src/esTransform.cpp; sourceTree = "<group>"; };
 		80245B021F62D8D000141627 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../Src/main.cpp; sourceTree = "<group>"; };
+		8042CFA81F9B5DEE005B7B92 /* heightmap.tga */ = {isa = PBXFileReference; lastKnownFileType = file; name = heightmap.tga; path = Game/heightmap.tga; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +76,7 @@
 				80245ADF1F62D49700141627 /* Header Files */,
 				80245AE01F62D4A400141627 /* Source Files */,
 				80245AC71F62D2E300141627 /* Game */,
+				8042CFA71F9B5DAF005B7B92 /* Resources */,
 				80245AC61F62D2E300141627 /* Products */,
 				80245AEC1F62D69400141627 /* Frameworks */,
 			);
@@ -145,6 +148,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		8042CFA71F9B5DAF005B7B92 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8042CFA81F9B5DEE005B7B92 /* heightmap.tga */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -206,6 +217,7 @@
 			files = (
 				80245AD51F62D2E300141627 /* Assets.xcassets in Resources */,
 				80245AE51F62D4C800141627 /* Main_iPad.storyboard in Resources */,
+				8042CFA91F9B5DEE005B7B92 /* heightmap.tga in Resources */,
 				80245AE61F62D4C800141627 /* Main_iPhone.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

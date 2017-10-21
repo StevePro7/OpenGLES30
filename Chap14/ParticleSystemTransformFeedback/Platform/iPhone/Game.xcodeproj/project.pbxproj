@@ -24,6 +24,8 @@
 		80245B001F62D88100141627 /* esShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80245AFD1F62D88100141627 /* esShapes.cpp */; };
 		80245B011F62D88100141627 /* esTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80245AFE1F62D88100141627 /* esTransform.cpp */; };
 		80245B031F62D8D000141627 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80245B021F62D8D000141627 /* main.cpp */; };
+		8042CFA31F9B5C32005B7B92 /* Noise3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8042CFA21F9B5C32005B7B92 /* Noise3D.cpp */; };
+		8042CFA61F9B5D12005B7B92 /* smoke.tga in Resources */ = {isa = PBXBuildFile; fileRef = 8042CFA51F9B5D12005B7B92 /* smoke.tga */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +52,9 @@
 		80245AFD1F62D88100141627 /* esShapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = esShapes.cpp; path = ../../../../Common/Src/esShapes.cpp; sourceTree = "<group>"; };
 		80245AFE1F62D88100141627 /* esTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = esTransform.cpp; path = ../../../../Common/Src/esTransform.cpp; sourceTree = "<group>"; };
 		80245B021F62D8D000141627 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../Src/main.cpp; sourceTree = "<group>"; };
+		8042CFA11F9B5C25005B7B92 /* Noise3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Noise3D.h; path = ../../Src/Noise3D.h; sourceTree = "<group>"; };
+		8042CFA21F9B5C32005B7B92 /* Noise3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Noise3D.cpp; path = ../../Src/Noise3D.cpp; sourceTree = "<group>"; };
+		8042CFA51F9B5D12005B7B92 /* smoke.tga */ = {isa = PBXFileReference; lastKnownFileType = file; name = smoke.tga; path = Game/smoke.tga; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +79,7 @@
 				80245ADF1F62D49700141627 /* Header Files */,
 				80245AE01F62D4A400141627 /* Source Files */,
 				80245AC71F62D2E300141627 /* Game */,
+				8042CFA41F9B5C98005B7B92 /* Resources */,
 				80245AC61F62D2E300141627 /* Products */,
 				80245AEC1F62D69400141627 /* Frameworks */,
 			);
@@ -117,6 +123,7 @@
 			isa = PBXGroup;
 			children = (
 				80245AF91F62D84A00141627 /* esUtil.h */,
+				8042CFA11F9B5C25005B7B92 /* Noise3D.h */,
 			);
 			name = "Header Files";
 			sourceTree = "<group>";
@@ -128,6 +135,7 @@
 				80245AFD1F62D88100141627 /* esShapes.cpp */,
 				80245AFE1F62D88100141627 /* esTransform.cpp */,
 				80245AFA1F62D86700141627 /* esUtil.cpp */,
+				8042CFA21F9B5C32005B7B92 /* Noise3D.cpp */,
 				80245B021F62D8D000141627 /* main.cpp */,
 			);
 			name = "Source Files";
@@ -143,6 +151,14 @@
 				80245AED1F62D69400141627 /* Foundation.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8042CFA41F9B5C98005B7B92 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8042CFA51F9B5D12005B7B92 /* smoke.tga */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -206,6 +222,7 @@
 			files = (
 				80245AD51F62D2E300141627 /* Assets.xcassets in Resources */,
 				80245AE51F62D4C800141627 /* Main_iPad.storyboard in Resources */,
+				8042CFA61F9B5D12005B7B92 /* smoke.tga in Resources */,
 				80245AE61F62D4C800141627 /* Main_iPhone.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -222,6 +239,7 @@
 				80245B031F62D8D000141627 /* main.cpp in Sources */,
 				80245ACD1F62D2E300141627 /* AppDelegate.m in Sources */,
 				80245B001F62D88100141627 /* esShapes.cpp in Sources */,
+				8042CFA31F9B5C32005B7B92 /* Noise3D.cpp in Sources */,
 				80245B011F62D88100141627 /* esTransform.cpp in Sources */,
 				80245AE91F62D4E000141627 /* FileWrapper.mm in Sources */,
 				80245AFF1F62D88100141627 /* esShader.cpp in Sources */,
