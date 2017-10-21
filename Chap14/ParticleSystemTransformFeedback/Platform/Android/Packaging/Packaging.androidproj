@@ -119,6 +119,7 @@
     </AntPackage>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Content Include="Assets\smoke.tga" />
     <Content Include="res\mipmap-hdpi\ic_launcher.png" />
     <Content Include="res\mipmap-ldpi\ic_launcher.png" />
     <Content Include="res\mipmap-mdpi\ic_launcher.png" />
