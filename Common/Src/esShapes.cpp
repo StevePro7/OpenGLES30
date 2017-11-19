@@ -274,5 +274,5 @@ int ESUTIL_API esGenSquareGrid( int size, GLfloat** vertices, GLuint** indices )
         }
     }
 
-    return 0;
+    return numIndices;
 }
