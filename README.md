@@ -23,3 +23,12 @@ C++11 (-std=c++11)
 
 
 git push http://username:password@github.com/StevePro7/OpenGLES30.git
+
+
+CRASHES
+Chap09
+Simple_TextureCubemap
+TexturWarp		Windows only		seems to work on iOS / Android mobile devices
+
+Chap14
+ParticleSystemTransformFeedback		Windows only
